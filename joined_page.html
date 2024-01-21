@@ -99,8 +99,9 @@
     <div id="button-50">
       <button class="button-50" onclick="toggleCamera()">Toggle Camera</button>
       <button class="button-50" onclick="toggleAudio()">Toggle Audio</button>
-      <button class="button-50" onclick="toggleAudio()">Start Screen Share</button>
-      <button class="button-50" role="button">Join</button>
+      <button class="button-50" onclick="startScreenShare()">Start Screen Share</button>
+      <a href="index.html"><button class="button-50" onclick="endCall()">End Call</button></a>
+      
     </div>
   </div>
 
@@ -160,14 +161,20 @@
         videoFrame.srcObject = newStream;
       }
     }
-    async function startScreenShare(elementId) {
+    async function startScreenShare() {
       try {
         const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-        const videoFrame = document.getElementById(elementId);
+        const videoFrame = document.getElementById();
         videoFrame.srcObject = stream;
       } catch (error) {
         console.error('Error accessing screen share:', error);
       }
+    }
+    function endCall() {
+      const videoFrame = document.getElementById();
+      const tracks = videoFrame.srcObject.getTracks();
+      tracks.forEach(track => track.stop());
+      videoFrame.srcObject = null;
     }
   </script>
 </body>
