@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #F8FAE5;
+    }
+
+    #video-container {
+      position:sticky;
+      border: #000;
+      
+    }
+
+    #video-frame {
+      width: 100%;
+      height: 100%;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+    }
+
+    #button-50 {
+    appearance: button;
+    background-color: #000;
+    background-image: none;
+    border: 1px solid #000;
+    border-radius: 4px;
+    box-shadow: #fff 4px 4px 0 0,#000 4px 4px 0 1px;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display:block;
+    font-family: ITCAvantGardeStd-Bk,Arial,sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    margin: 0 5px 10px 0;
+    overflow: visible;
+    padding: 12px 40px;
+    text-align: center;
+    text-transform: none;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  
+  #button-50:focus {
+    text-decoration: none;
+  }
+  
+  #button-50:hover {
+    text-decoration: none;
+  }
+  
+  #button-50:active {
+    box-shadow: rgba(0, 0, 0, .125) 0 3px 5px inset;
+    outline: 0;
+  }
+  
+  #button-50:not([disabled]):active {
+    box-shadow: #fff 2px 2px 0 0, #000 2px 2px 0 1px;
+    transform: translate(2px, 2px);
+  }
+  
+  @media (min-width: 768px) {
+    #button-50 {
+      padding: 12px 50px;
+    }
+  }
+  header{
+    background-color:#000;
+    height: 150px;
+    width: 200px;
+    border: 2px #fff;
+    border-radius: 10px;
+    
+  }
+
+    
+
+  </style>
+</head>
+<body>
+  <header>
+    <img src="Vision Link-logos/Vision Link-logos_transparent.png" alt="" width="170px">
+  </header><br>
+  <div id="video-container">
+    <video id="video-frame" autoplay muted playsinline></video>
+    <div id="button-50">
+      <button class="button-50" onclick="toggleCamera()">Toggle Camera</button>
+      <button class="button-50" onclick="toggleAudio()">Toggle Audio</button>
+      <button class="button-50" role="button">Join</button>
+    </div>
+  </div>
+
+  <script>
+    let videoStream;
+    let audioStream;
+
+    async function toggleCamera() {
+      try {
+        if (!videoStream) {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          videoStream = stream;
+        } else {
+          stopStream(videoStream);
+          videoStream = null;
+        }
+
+        updateVideo();
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+      }
+    }
+
+    async function toggleAudio() {
+      try {
+        if (!audioStream) {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          audioStream = stream;
+        } else {
+          stopStream(audioStream);
+          audioStream = null;
+        }
+
+        updateAudio();
+      } catch (error) {
+        console.error('Error accessing audio:', error);
+      }
+    }
+
+    function stopStream(stream) {
+      const tracks = stream.getTracks();
+      tracks.forEach(track => track.stop());
+    }
+
+    function updateVideo() {
+      const videoFrame = document.getElementById('video-frame');
+      videoFrame.srcObject = videoStream;
+    }
+
+    function updateAudio() {
+      const audioTracks = audioStream.getAudioTracks();
+      if (videoStream) {
+        const videoTracks = videoStream.getVideoTracks();
+        const combinedTracks = [...videoTracks, ...audioTracks];
+        const newStream = new MediaStream(combinedTracks);
+        const videoFrame = document.getElementById('video-frame');
+        videoFrame.srcObject = newStream;
+      }
+    }
+  </script>
+</body>
+</html>
